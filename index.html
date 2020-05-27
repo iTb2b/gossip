@@ -1,0 +1,196 @@
+<html><head>
+    <title>😜Share My Gossip🧐</title>
+    <link rel="shortcut icon" href="./square.ico">
+    <link rel="apple-touch-icon" sizes="128x128" href="./square.png">
+    <link type="text/css" rel="stylesheet" href="https://at.alicdn.com/t/font_1755564_z4mhxbw13mq.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://fonts.loli.net/css?family=Noto+Serif+SC:300,900&amp;display=swap&amp;subset=chinese-simplified" rel="stylesheet">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Tao Cheung">
+    <meta charset="utf-8">
+    <meta name="robots" content="index,follow">
+    <meta name="google" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="verify" content="index,follow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <header id="header">
+        <h1>我总得说点什么……</h1>
+    </header>
+    <main id="app"><aside><p id="describe">
+                Creative | Minority | Minimalist | Geek
+            <p class="tip">现在总共说了 {{count}} 条</p>
+
+            <section class="item" v-for="item in contents" v-cloak>
+                 <p v-html='item.attributes.content'></p>
+                 <time v-bind:datetime="item.attributes.time">{{item.attributes.time}}</time>
+            </section>
+        <div class="load-ctn"><button class="load-btn">之 前</button></div></main>
+    <footer>
+        <p class="center-text">Copyright © 2020 Tao Cheung, All Rights Reserved</p>
+    </footer>
+
+<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.5.3/dist/av-min.js"></script>
+<script type="text/javascript">
+    var {
+        Query
+    } = AV;
+    AV.init({
+        appId: "6DbOhHnvkvjtR2iE7eqMNQgR-MdYXbMMI", //你的 leancloud 应用 id （设置-应用keys-AppID）
+        appKey: "H9rueU8id6q4GMA8HMTlNicJ", //你的 leancloud 应用 AppKey （设置-应用keys-AppKey）
+    });
+
+    var query = new AV.Query('content');
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            page: 0,
+            count: 0,
+            contents: []
+        },
+        methods: {
+            loadMore: function(event) {
+                getData(++this.page);
+            }
+        }
+    })
+
+    function urlToLink(str) {
+        var re = /(http|ftp|https):\/\/[\w-]+(.[\w-]+)+([\w-.,@?^=%&:/~+#]*[\w-\@?^=%&/~+#])?/g;;
+
+        str = str.replace(re, function(website) {
+            return "<a href='" + website + "' target='_blank'> <i class='iconfont icon-lianjie-copy'></i>链接 </a>";
+        });
+        return str;
+    }
+
+    function getData(page = 0) {
+        query.descending('createdAt').skip(page * 10).limit(10).find().then(function(results) {
+            if (results.length == 0) {
+                alert('之前没吐过了')
+            } else {
+                let resC = results;
+                reqData = false;
+                resC.forEach((i) => {
+                    let dateTmp = new Date(i.createdAt);
+                    i.attributes.time = `${dateTmp.getFullYear()}-${(dateTmp.getMonth() + 1) < 10 ? ('0' + (dateTmp.getMonth()+1)) : dateTmp.getMonth()+1}-${(dateTmp.getDate() + 1) < 10 ? ('0' + dateTmp.getDate()) : dateTmp.getDate()} ${(dateTmp.getHours() + 1) <= 10 ? ('0' + dateTmp.getHours()) : dateTmp.getHours()}:${(dateTmp.getMinutes() + 1) <= 10 ? ('0' + dateTmp.getMinutes()) : dateTmp.getMinutes()}`;
+                    i.attributes.content = "<span>" + urlToLink(i.attributes.content) + "</span>";
+                    app.contents.push(i);
+                })
+            }
+
+        }, function(error) {});
+    }
+
+    getData(0);
+
+    query.count().then(function(count) {
+        app.count = count;
+    }, function(error) {});
+</script>
+<style type="text/css">
+
+    [v-cloak] {
+        display: none;
+    }
+    
+    html {
+        font-size: 16px;
+    }
+    
+    body,
+    button {
+        color: #000;
+        background-color: #e0e5ec;
+        font-family: 'Noto Serif SC', serif;
+    }
+    
+    aside {
+        font-weight: 300;
+        font-style: normal;
+        line-height: 1.8rem;
+    }
+    
+    #app,
+    header,
+    footer {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    h1 {
+        font-weight: 900;
+    }
+    
+    footer {
+        font-size: 0.8rem;
+        clear: both;
+    }
+    
+    .item {
+        font-weight: 250px;
+        font-style: normal;
+        line-height: 1.8rem;
+        padding: 20px 50px;
+        border-radius: 20px;
+        border: 3px solid rgba(255,255,255,0.2);
+        box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
+                    -9px -9px 16px rgba(255, 255, 255, 0.5),
+                    inset 3px 3px 7px rgba(136, 165, 191, 0.48), 
+                    inset -3px -3px 7px #FFFFFF;
+        background: linear-gradient(318.32deg, rgba(163, 177, 198, 0.1) 0%, rgba(163, 177, 198, 0.1) 55%, rgba(163, 177, 198, 0.25) 100%);
+        margin-top: 30px;
+        text-align: left;
+    }
+    
+    .item a {
+        text-decoration: none;
+        color: #5dafd5;
+    }
+    
+    time {
+        font-size: 12px;
+        font-weight: 300;
+    }
+    
+    .center-text {
+        text-align: center;
+    }
+    
+    .load-ctn {
+        width: 100%;
+    }
+    
+    .load-btn {
+        height: 50px;
+        width: 100px;
+        outline: none;
+        font-size: 16px;
+        margin: 30px auto;
+        border-width: 0;
+        line-height: 30px;
+        float: right;
+        border-radius: 25px;
+        background: transparent;
+        box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+    }
+    
+    .load-btn:hover:active {
+        box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
+                    -9px -9px 16px rgba(255, 255, 255, 0.5),
+                    inset 3px 3px 7px rgba(136, 165, 191, 0.48), 
+                    inset -3px -3px 7px #FFFFFF;
+        background: linear-gradient(318.32deg, rgba(163, 177, 198, 0.1) 0%, rgba(163, 177, 198, 0.1) 55%, rgba(163, 177, 198, 0.25) 100%);
+    }
+</style>
+
+</body></html>
