@@ -5,6 +5,13 @@
     <link type="text/css" rel="stylesheet" href="https://at.alicdn.com/t/font_1755564_z4mhxbw13mq.css">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://fonts.loli.net/css?family=Noto+Serif+SC:300,900&amp;display=swap&amp;subset=chinese-simplified" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="font.css">
+    <style type="text/css">
+        p{
+            font-family: 'Coca-ColaCareFontKaiTi';
+            font-size: 20px;
+        }
+    </style>
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="Tao Cheung">
@@ -29,7 +36,11 @@
                  <p v-html='item.attributes.content'></p>
                  <time v-bind:datetime="item.attributes.time">{{item.attributes.time}}</time>
             </section>
-        <div class="load-ctn"><button class="load-btn">之 前</button></div></main>
+        <div class="load-ctn">
+            <button class="load-btn" v-on:click="loadMore" v-if="contents" v-cloak>之 前</button>
+            <p class="tip" v-else>别急，加载呢</p>
+
+        </div></main>
     <footer>
         <p class="center-text">Copyright © 2020 Tao Cheung, All Rights Reserved</p>
     </footer>
@@ -73,7 +84,7 @@
     function getData(page = 0) {
         query.descending('createdAt').skip(page * 10).limit(10).find().then(function(results) {
             if (results.length == 0) {
-                alert('之前没吐过了')
+                alert('之前没有了')
             } else {
                 let resC = results;
                 reqData = false;
@@ -107,8 +118,9 @@
     body,
     button {
         color: #000;
+    
         background-color: #e0e5ec;
-        font-family: 'Noto Serif SC', serif;
+       /* font-family: 'Noto Serif SC', serif;*/
     }
     
     aside {
